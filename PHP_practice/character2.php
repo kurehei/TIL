@@ -1,4 +1,7 @@
 <?php
+
+namespace TechAcademy\RPG\Characters;
+
 class Character2 {
   public static $type = "";
   public $suffix='';

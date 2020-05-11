@@ -1,4 +1,6 @@
 <?php
+namespace TechAcademy\RPG\Characters;
+
 require_once 'character2.php';
 
 class Slime extends Character2 {

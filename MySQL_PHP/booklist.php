@@ -8,10 +8,30 @@
     </head>
     <body class="mt-4">
       <?php
-       print '<div style="background-color: skyblue;">';
-       print '<div>';
-       print_r($_POST['book_title']); // $_PORTでにフォームから受け取った値が入る
-       print '</div>';
+      // DBの情報
+       $username = 'root';
+       $password = '';
+        //PDOは、mysqlをDBに接続するために拡張モジュール
+       $database = new PDO('mysql:host=localhost;dbname=booklist;charset=UTF8;',$username,$password);
+
+       if(array_key_exists('book_title',$_POST)) {
+        $sql = 'INSERT INTO books (book_title) values(:book_title)';
+        $statement = $database->prepare($sql);
+        $statement->bindParam(':book_title',$_POST['book_title']);
+        $statement->execute();
+        $statement=null;
+       }
+
+       $sql = 'SELECT * FROM books ORDER BY created_at DESC';
+       // SQLを実行する
+       $statement = $database->query($sql);
+       // 結果レコード（ステートメントオブジェクト）を配列に変換する
+       $records = $statement->fetchAll();
+
+       // ステートメントを破棄する
+       $statement = null;
+       // MySQLを使った処理が終わると、接続は不要なので切断する
+       $database = null;
       ?>
         <div class="container">
             <h1><a href="booklist.php">Booklist</a></h1>
@@ -28,12 +48,14 @@
 
             <h2>登録された書籍一覧</h2>
             <ul>
-                <li>はじめてのWebアプリケーション</li>
-                <li>かんたん！PHPプログラミング</li>
-                <li>PHP+MySQLで作るWebアプリケーション</li>
-                <?php ?>
-                <li><?php ?></li>
-                <?php ?>
+              <?php if ($records) {
+                  foreach($records as $record) {
+                    // 連想配列から、値を取得する
+                    $book_title = $record['book_title'];
+              ?>
+              <li><?php print htmlspecialchars($book_title,ENT_QUOTES, "UTF-8")?></li>
+              <?php }?><?php
+             }?>
             </ul>
         </div>
 
